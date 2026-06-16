@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>联合学术报告 | 数交叉·智融合</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand-lockup" href="index.html" aria-label="数交叉·智融合首页">
+      <img src="assets/brand-logo.png" alt="数交叉·智融合品牌标识">
+      <span>
+        <strong>数交叉·智融合</strong>
+        <small>Mathematics × Information Intelligence</small>
+      </span>
+    </a>
+    <nav class="top-nav" aria-label="主导航">
+      <a href="index.html#about">平台简介</a>
+      <a href="index.html#latest">最新活动</a>
+      <a class="current" href="joint-reports.html">联合学术报告</a>
+      <a href="summer-school.html">暑期学校</a>
+      <a href="conferences.html">国际会议</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="page-title report-title">
+      <p class="eyebrow">Joint Academic Talk Series</p>
+      <h1>联合学术报告</h1>
+      <p>
+        本模块用于汇总“数交叉·智融合”系列联合学术报告的专家学者名单、报告题目、时间地点与资料链接。
+        每场报告可单独设置详情栏目，并插入海报图片，后续可持续追加。
+      </p>
+    </section>
+
+    <section class="section report-section">
+      <div class="section-heading compact-heading">
+        <p class="eyebrow">Speakers</p>
+        <h2>参会学者名单</h2>
+        <p>名单较多时可通过关键词、年份筛选和分页浏览；下方报告详情会与名单筛选同步。</p>
+      </div>
+      <div class="list-controls" aria-label="报告名单筛选">
+        <label class="search-box">
+          <span>Search</span>
+          <input id="speakerSearch" type="search" placeholder="Search name, affiliation, topic">
+        </label>
+        <label class="select-box">
+          <span>Year</span>
+          <select id="yearFilter">
+            <option value="all">All years</option>
+            <option value="2026">2026</option>
+          </select>
+        </label>
+        <label class="select-box">
+          <span>Show</span>
+          <select id="pageSize">
+            <option value="10">10 / page</option>
+            <option value="20">20 / page</option>
+            <option value="all">All</option>
+          </select>
+        </label>
+        <span class="result-count" id="resultCount">0 speakers</span>
+      </div>
+      <div class="table-wrap" aria-label="联合学术报告参会学者名单">
+        <table class="speaker-table">
+          <thead>
+            <tr>
+              <th>时间</th>
+              <th>学者姓名</th>
+              <th>单位</th>
+              <th>报告题目</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-report-id="report-1" data-year="2026" data-date="" data-status="upcoming" data-name="Firstname Lastname" data-affiliation="Department / Institute, University" data-topic="Talk Title">
+              <td>2026-XX-XX</td>
+              <td>Prof. / Dr. Firstname Lastname</td>
+              <td>Department / Institute, University</td>
+              <td>Talk Title</td>
+              <td><span class="table-status">Upcoming</span></td>
+            </tr>
+            <tr data-report-id="report-2" data-year="2026" data-date="" data-status="planned" data-name="Speaker Name" data-affiliation="University / Research Institute" data-topic="Mathematics and Information Intelligence">
+              <td>2026-XX-XX</td>
+              <td>Prof. / Dr. Speaker Name</td>
+              <td>University / Research Institute</td>
+              <td>Mathematics and Information Intelligence</td>
+              <td><span class="table-status muted">Planned</span></td>
+            </tr>
+            <tr data-report-id="report-3" data-year="2026" data-date="2026-09-02" data-status="upcoming" data-name="宗传明" data-affiliation="天津大学数学学院" data-topic="报告题目待更新">
+              <td>2026-09-02</td>
+              <td>宗传明教授</td>
+              <td>天津大学数学学院</td>
+              <td>报告题目待更新</td>
+              <td><span class="table-status">Upcoming</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" aria-label="名单分页">
+        <button type="button" id="prevPage">上一页</button>
+        <span id="pageInfo">Page 1 / 1</span>
+        <button type="button" id="nextPage">下一页</button>
+      </div>
+
+      <div class="section-heading compact-heading report-detail-heading">
+        <p class="eyebrow">Reports</p>
+        <h2>报告详情与海报</h2>
+      </div>
+
+      <div class="speaker-list report-list" id="speakerList">
+        <article class="speaker-card report-card" data-report-id="report-1" data-year="2026" data-date="" data-status="upcoming" data-name="Firstname Lastname" data-affiliation="Department / Institute, University" data-topic="Talk Title">
+          <a class="poster-frame" href="assets/poster-template.png" aria-label="查看报告海报">
+            <img src="assets/poster-template.png" alt="联合报告海报模板">
+          </a>
+          <div class="report-content">
+            <div class="speaker-meta">
+              <span class="date">2026-XX-XX</span>
+              <span class="status">Upcoming</span>
+            </div>
+            <h2>Prof. / Dr. Firstname Lastname</h2>
+            <p class="affiliation">Department / Institute, University</p>
+            <h3>Talk Title</h3>
+            <dl class="report-details">
+              <div>
+                <dt>Time</dt>
+                <dd>XX:XX-XX:XX (UTC+8)</dd>
+              </div>
+              <div>
+                <dt>Venue</dt>
+                <dd>Room XXX / Online</dd>
+              </div>
+            </dl>
+            <p class="summary">
+              Add a short abstract or keyword summary here. This area can record the speaker's research direction,
+              interdisciplinary background, and the main theme of the report.
+            </p>
+            <div class="card-actions">
+              <a href="#" aria-label="查看报告详情">Details</a>
+              <a href="assets/poster-template.png" aria-label="查看海报">Poster</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="speaker-card report-card" data-report-id="report-2" data-year="2026" data-date="" data-status="planned" data-name="Speaker Name" data-affiliation="University / Research Institute" data-topic="Mathematics and Information Intelligence">
+          <a class="poster-frame empty-poster" href="#" aria-label="海报待上传">
+            <span>Poster<br>Coming Soon</span>
+          </a>
+          <div class="report-content">
+            <div class="speaker-meta">
+              <span class="date">2026-XX-XX</span>
+              <span class="status">Planned</span>
+            </div>
+            <h2>Prof. / Dr. Speaker Name</h2>
+            <p class="affiliation">University / Research Institute</p>
+            <h3>Mathematics and Information Intelligence</h3>
+            <dl class="report-details">
+              <div>
+                <dt>Time</dt>
+                <dd>To be announced</dd>
+              </div>
+              <div>
+                <dt>Venue</dt>
+                <dd>To be announced</dd>
+              </div>
+            </dl>
+            <p class="summary">
+              Replace this placeholder with the invited scholar's title, affiliation, talk title, and report information.
+            </p>
+            <div class="card-actions">
+              <a href="#" aria-label="查看报告详情">Details</a>
+              <a href="#" aria-label="海报待上传">Poster</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="speaker-card report-card" data-report-id="report-3" data-year="2026" data-date="2026-09-02" data-status="upcoming" data-name="宗传明" data-affiliation="天津大学数学学院" data-topic="报告题目待更新">
+          <a class="poster-frame empty-poster" href="#" aria-label="海报待上传">
+            <span>Poster<br>Coming Soon</span>
+          </a>
+          <div class="report-content">
+            <div class="speaker-meta">
+              <span class="date">2026-09-02</span>
+              <span class="status">Upcoming</span>
+            </div>
+            <h2>宗传明教授</h2>
+            <p class="affiliation">天津大学数学学院</p>
+            <h3>报告题目待更新</h3>
+            <dl class="report-details">
+              <div>
+                <dt>Time</dt>
+                <dd>周三下午 / Wednesday Afternoon</dd>
+              </div>
+              <div>
+                <dt>Venue</dt>
+                <dd>天津大学数学学院</dd>
+              </div>
+            </dl>
+            <p class="summary">
+              已预留宗传明教授的报告信息。后续可在此补充具体报告题目、摘要、举办形式与海报材料。
+            </p>
+            <div class="card-actions">
+              <a href="#" aria-label="查看报告详情">Details</a>
+              <a href="#" aria-label="海报待上传">Poster</a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>数交叉·智融合</span>
+    <span><a href="index.html">Back to Home</a></span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
