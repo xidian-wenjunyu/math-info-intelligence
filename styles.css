@@ -116,7 +116,7 @@ main {
 }
 
 .academic-hero .hero-copy {
-  max-width: 980px;
+  max-width: 100%;
 }
 
 .eyebrow {
@@ -821,6 +821,16 @@ p {
   margin: 0;
   padding-left: 20px;
   color: #26384d;
+}
+
+@media (min-width: 1500px) {
+  main {
+    width: min(1680px, calc(100% - 120px));
+  }
+
+  .academic-hero .hero-copy {
+    max-width: 1280px;
+  }
 }
 
 @media (max-width: 860px) {
