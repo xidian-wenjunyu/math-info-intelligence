@@ -6,12 +6,8 @@ const pageSizeSelect = document.querySelector("#pageSize");
 const prevPageButton = document.querySelector("#prevPage");
 const nextPageButton = document.querySelector("#nextPage");
 const pageInfo = document.querySelector("#pageInfo");
-const prevReportPageButton = document.querySelector("#prevReportPage");
-const nextReportPageButton = document.querySelector("#nextReportPage");
-const reportPageInfo = document.querySelector("#reportPageInfo");
-const reportPageSize = 10;
-let tablePage = 1;
-let reportPage = 1;
+const tableRows = [...document.querySelectorAll(".speaker-table tbody tr")];
+let currentPage = 1;
 
 function statusRank(status) {
   const ranks = {
@@ -25,25 +21,23 @@ function statusRank(status) {
 }
 
 function dateRank(value) {
-  if (!value) return Number.POSITIVE_INFINITY;
+  if (!value) return Number.NEGATIVE_INFINITY;
   const stamp = Date.parse(`${value}T00:00:00`);
-  return Number.isNaN(stamp) ? Number.POSITIVE_INFINITY : stamp;
+  return Number.isNaN(stamp) ? Number.NEGATIVE_INFINITY : stamp;
 }
 
 function compareEntries(a, b) {
-  const dateDiff = dateRank(b.dataset.date) - dateRank(a.dataset.date);
-  if (dateDiff !== 0) return dateDiff;
-
   const statusDiff = statusRank(a.dataset.status) - statusRank(b.dataset.status);
   if (statusDiff !== 0) return statusDiff;
+
+  const dateDiff = dateRank(b.dataset.date) - dateRank(a.dataset.date);
+  if (dateDiff !== 0) return dateDiff;
 
   return (a.dataset.reportId || "").localeCompare(b.dataset.reportId || "");
 }
 
 function sortReportEntries() {
   const tableBody = document.querySelector(".speaker-table tbody");
-  if (!speakerList || !tableBody) return;
-
   const cards = [...speakerList.querySelectorAll(".speaker-card")];
   const rows = [...tableBody.querySelectorAll("tr")];
 
@@ -51,80 +45,56 @@ function sortReportEntries() {
   cards.sort(compareEntries).forEach((card) => speakerList.appendChild(card));
 }
 
-function entryMatches(entry, query, selectedYear) {
-  const yearMatch = selectedYear === "all" || entry.dataset.year === selectedYear;
-  const text = [
-    entry.dataset.name,
-    entry.dataset.affiliation,
-    entry.dataset.topic,
-    entry.textContent
-  ].join(" ").toLowerCase();
-  return yearMatch && text.includes(query);
-}
-
-function getPageSize(select) {
-  const value = select ? select.value : "all";
-  return value === "all" ? Infinity : Number(value);
-}
-
-function paginate(entries, page, pageSize) {
-  const totalPages = pageSize === Infinity ? 1 : Math.max(1, Math.ceil(entries.length / pageSize));
-  const safePage = Math.min(page, totalPages);
-  const start = pageSize === Infinity ? 0 : (safePage - 1) * pageSize;
-  const end = pageSize === Infinity ? entries.length : start + pageSize;
-
-  return {
-    visible: new Set(entries.slice(start, end)),
-    page: safePage,
-    totalPages
-  };
-}
-
-function updateTableResults(query, selectedYear) {
-  const tableRows = [...document.querySelectorAll(".speaker-table tbody tr")];
-  const pageSize = getPageSize(pageSizeSelect);
-  const matches = tableRows.filter((row) => entryMatches(row, query, selectedYear));
-  const result = paginate(matches, tablePage, pageSize);
-  tablePage = result.page;
-
-  tableRows.forEach((row) => {
-    row.hidden = !result.visible.has(row);
-  });
-
-  if (resultCount) resultCount.textContent = `${matches.length} speaker${matches.length === 1 ? "" : "s"}`;
-  if (pageInfo) pageInfo.textContent = `Page ${tablePage} / ${result.totalPages}`;
-  if (prevPageButton) prevPageButton.disabled = tablePage <= 1;
-  if (nextPageButton) nextPageButton.disabled = tablePage >= result.totalPages;
-}
-
-function updateReportResults(query, selectedYear) {
-  const cards = [...speakerList.querySelectorAll(".speaker-card")];
-  const matches = cards.filter((card) => entryMatches(card, query, selectedYear));
-  const result = paginate(matches, reportPage, reportPageSize);
-  reportPage = result.page;
-
-  cards.forEach((card) => {
-    card.hidden = !result.visible.has(card);
-  });
-
-  if (reportPageInfo) reportPageInfo.textContent = `Page ${reportPage} / ${result.totalPages}`;
-  if (prevReportPageButton) prevReportPageButton.disabled = reportPage <= 1;
-  if (nextReportPageButton) nextReportPageButton.disabled = reportPage >= result.totalPages;
-}
-
 function updateResults() {
-  if (!speakerList || !searchInput) return;
+  if (!speakerList || !searchInput || !resultCount) return;
 
   const query = searchInput.value.trim().toLowerCase();
+  const cards = [...speakerList.querySelectorAll(".speaker-card")];
   const selectedYear = yearFilter ? yearFilter.value : "all";
+  const pageSizeValue = pageSizeSelect ? pageSizeSelect.value : "all";
+  const pageSize = pageSizeValue === "all" ? Infinity : Number(pageSizeValue);
 
-  updateTableResults(query, selectedYear);
-  updateReportResults(query, selectedYear);
+  const matches = cards.filter((card) => {
+    const yearMatch = selectedYear === "all" || card.dataset.year === selectedYear;
+    const text = [
+      card.dataset.name,
+      card.dataset.affiliation,
+      card.dataset.topic,
+      card.textContent
+    ].join(" ").toLowerCase();
+    return yearMatch && text.includes(query);
+  });
+
+  const totalPages = pageSize === Infinity ? 1 : Math.max(1, Math.ceil(matches.length / pageSize));
+  currentPage = Math.min(currentPage, totalPages);
+  const start = pageSize === Infinity ? 0 : (currentPage - 1) * pageSize;
+  const end = pageSize === Infinity ? matches.length : start + pageSize;
+  const visibleIds = new Set(matches.slice(start, end).map((card) => card.dataset.reportId));
+
+  cards.forEach((card) => {
+    card.hidden = !visibleIds.has(card.dataset.reportId);
+  });
+
+  tableRows.forEach((row) => {
+    const text = [
+      row.dataset.name,
+      row.dataset.affiliation,
+      row.dataset.topic,
+      row.textContent
+    ].join(" ").toLowerCase();
+    const yearMatch = selectedYear === "all" || row.dataset.year === selectedYear;
+    const match = yearMatch && text.includes(query);
+    row.hidden = !match || !visibleIds.has(row.dataset.reportId);
+  });
+
+  resultCount.textContent = `${matches.length} speaker${matches.length === 1 ? "" : "s"}`;
+  if (pageInfo) pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+  if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
+  if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;
 }
 
 function resetAndUpdate() {
-  tablePage = 1;
-  reportPage = 1;
+  currentPage = 1;
   updateResults();
 }
 
@@ -132,24 +102,13 @@ if (searchInput) {
   sortReportEntries();
   searchInput.addEventListener("input", resetAndUpdate);
   yearFilter?.addEventListener("change", resetAndUpdate);
-  pageSizeSelect?.addEventListener("change", () => {
-    tablePage = 1;
-    updateResults();
-  });
+  pageSizeSelect?.addEventListener("change", resetAndUpdate);
   prevPageButton?.addEventListener("click", () => {
-    tablePage = Math.max(1, tablePage - 1);
+    currentPage = Math.max(1, currentPage - 1);
     updateResults();
   });
   nextPageButton?.addEventListener("click", () => {
-    tablePage += 1;
-    updateResults();
-  });
-  prevReportPageButton?.addEventListener("click", () => {
-    reportPage = Math.max(1, reportPage - 1);
-    updateResults();
-  });
-  nextReportPageButton?.addEventListener("click", () => {
-    reportPage += 1;
+    currentPage += 1;
     updateResults();
   });
   updateResults();
