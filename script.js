@@ -46,7 +46,7 @@ function sortReportEntries() {
 }
 
 function updateResults() {
-  if (!speakerList || !searchInput || !resultCount) return;
+  if (!speakerList || !searchInput) return;
 
   const query = searchInput.value.trim().toLowerCase();
   const cards = [...speakerList.querySelectorAll(".speaker-card")];
@@ -87,7 +87,9 @@ function updateResults() {
     row.hidden = !match || !visibleIds.has(row.dataset.reportId);
   });
 
-  resultCount.textContent = `${matches.length} speaker${matches.length === 1 ? "" : "s"}`;
+  if (resultCount) {
+    resultCount.textContent = `${matches.length} speaker${matches.length === 1 ? "" : "s"}`;
+  }
   if (pageInfo) pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
   if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
   if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;

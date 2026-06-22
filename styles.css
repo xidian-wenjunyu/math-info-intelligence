@@ -96,7 +96,7 @@ a {
 }
 
 main {
-  width: min(1180px, calc(100% - 40px));
+  width: min(1440px, calc(100% - 64px));
   margin: 0 auto;
 }
 
@@ -110,8 +110,13 @@ main {
 }
 
 .academic-hero {
+  grid-template-columns: 1fr;
   min-height: 660px;
   padding-top: 64px;
+}
+
+.academic-hero .hero-copy {
+  max-width: 980px;
 }
 
 .eyebrow {
