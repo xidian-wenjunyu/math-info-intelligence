@@ -1,18 +1,17 @@
 const speakerList = document.querySelector("#speakerList");
 const searchInput = document.querySelector("#speakerSearch");
-const resultCount = document.querySelector("#resultCount");
 const yearFilter = document.querySelector("#yearFilter");
-const pageSizeSelect = document.querySelector("#pageSize");
 const prevPageButton = document.querySelector("#prevPage");
 const nextPageButton = document.querySelector("#nextPage");
 const pageInfo = document.querySelector("#pageInfo");
 const tableRows = [...document.querySelectorAll(".speaker-table tbody tr[data-report-id]")];
 let currentPage = 1;
+const previousPageSize = 10;
 
 const reportGroupLabels = {
-  0: "Upcoming",
-  1: "Previous",
-  2: "Unscheduled"
+  0: "Upcoming Talks",
+  1: "Previous Talks",
+  2: "Unscheduled Talks"
 };
 
 function parseReportDate(value) {
@@ -33,13 +32,16 @@ function todayStart() {
 }
 
 function reportGroup(entry) {
+  const stamp = dateRank(entry.dataset.date);
+  if (stamp !== Number.NEGATIVE_INFINITY) {
+    return stamp >= todayStart() ? 0 : 1;
+  }
+
   const status = (entry.dataset.status || "").toLowerCase();
   if (["upcoming", "ongoing", "planned"].includes(status)) return 0;
   if (["recent", "completed", "previous", "past"].includes(status)) return 1;
 
-  const stamp = dateRank(entry.dataset.date);
-  if (stamp === Number.NEGATIVE_INFINITY) return 2;
-  return stamp >= todayStart() ? 0 : 1;
+  return 2;
 }
 
 function compareEntries(a, b) {
@@ -79,14 +81,21 @@ function createCardGroupHeading(group) {
 function insertGroupSeparators(container, entries, createSeparator) {
   container.querySelectorAll(".report-group-row, .report-group-heading").forEach((node) => node.remove());
 
-  let lastGroup = null;
+  const groups = new Map();
   entries.forEach((entry) => {
     const group = reportGroup(entry);
-    if (group !== lastGroup) {
-      container.appendChild(createSeparator(group));
-      lastGroup = group;
-    }
-    container.appendChild(entry);
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(entry);
+  });
+
+  const orderedGroups = [0, 1];
+  [...groups.keys()].sort((a, b) => a - b).forEach((group) => {
+    if (!orderedGroups.includes(group)) orderedGroups.push(group);
+  });
+
+  orderedGroups.forEach((group) => {
+    container.appendChild(createSeparator(group));
+    (groups.get(group) || []).forEach((entry) => container.appendChild(entry));
   });
 }
 
@@ -99,15 +108,13 @@ function sortReportEntries() {
   insertGroupSeparators(speakerList, cards.sort(compareEntries), createCardGroupHeading);
 }
 
-function updateGroupSeparators(cards) {
+function updateGroupSeparators() {
   speakerList.querySelectorAll(".report-group-heading").forEach((heading) => {
-    const group = Number(heading.dataset.reportGroup);
-    heading.hidden = !cards.some((card) => !card.hidden && reportGroup(card) === group);
+    heading.hidden = false;
   });
 
   document.querySelectorAll(".speaker-table .report-group-row").forEach((row) => {
-    const group = Number(row.dataset.reportGroup);
-    row.hidden = !tableRows.some((tableRow) => !tableRow.hidden && reportGroup(tableRow) === group);
+    row.hidden = false;
   });
 }
 
@@ -117,10 +124,8 @@ function updateResults() {
   const query = searchInput.value.trim().toLowerCase();
   const cards = [...speakerList.querySelectorAll(".speaker-card")];
   const selectedYear = yearFilter ? yearFilter.value : "all";
-  const pageSizeValue = pageSizeSelect ? pageSizeSelect.value : "all";
-  const pageSize = pageSizeValue === "all" ? Infinity : Number(pageSizeValue);
 
-  const matches = cards.filter((card) => {
+  const matchesCard = (card) => {
     const yearMatch = selectedYear === "all" || card.dataset.year === selectedYear;
     const text = [
       card.dataset.name,
@@ -129,13 +134,22 @@ function updateResults() {
       card.textContent
     ].join(" ").toLowerCase();
     return yearMatch && text.includes(query);
-  });
+  };
 
-  const totalPages = pageSize === Infinity ? 1 : Math.max(1, Math.ceil(matches.length / pageSize));
+  const matches = cards.filter(matchesCard);
+  const upcomingMatches = matches.filter((card) => reportGroup(card) === 0);
+  const previousMatches = matches.filter((card) => reportGroup(card) === 1);
+  const otherMatches = matches.filter((card) => ![0, 1].includes(reportGroup(card)));
+
+  const totalPages = Math.max(1, Math.ceil(previousMatches.length / previousPageSize));
   currentPage = Math.min(currentPage, totalPages);
-  const start = pageSize === Infinity ? 0 : (currentPage - 1) * pageSize;
-  const end = pageSize === Infinity ? matches.length : start + pageSize;
-  const visibleIds = new Set(matches.slice(start, end).map((card) => card.dataset.reportId));
+  const start = (currentPage - 1) * previousPageSize;
+  const previousPageMatches = previousMatches.slice(start, start + previousPageSize);
+  const visibleIds = new Set([
+    ...upcomingMatches,
+    ...previousPageMatches,
+    ...otherMatches
+  ].map((card) => card.dataset.reportId));
 
   cards.forEach((card) => {
     card.hidden = !visibleIds.has(card.dataset.reportId);
@@ -153,12 +167,9 @@ function updateResults() {
     row.hidden = !match || !visibleIds.has(row.dataset.reportId);
   });
 
-  updateGroupSeparators(cards);
+  updateGroupSeparators();
 
-  if (resultCount) {
-    resultCount.textContent = `${matches.length} speaker${matches.length === 1 ? "" : "s"}`;
-  }
-  if (pageInfo) pageInfo.textContent = `Page ${currentPage} / ${totalPages}`;
+  if (pageInfo) pageInfo.textContent = `Previous Talks Page ${currentPage} / ${totalPages}`;
   if (prevPageButton) prevPageButton.disabled = currentPage <= 1;
   if (nextPageButton) nextPageButton.disabled = currentPage >= totalPages;
 }
@@ -172,7 +183,6 @@ if (searchInput) {
   sortReportEntries();
   searchInput.addEventListener("input", resetAndUpdate);
   yearFilter?.addEventListener("change", resetAndUpdate);
-  pageSizeSelect?.addEventListener("change", resetAndUpdate);
   prevPageButton?.addEventListener("click", () => {
     currentPage = Math.max(1, currentPage - 1);
     updateResults();

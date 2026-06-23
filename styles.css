@@ -521,7 +521,7 @@ p {
 
 .list-controls {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) 150px 150px auto;
+  grid-template-columns: minmax(280px, 1fr) 150px;
   gap: 14px;
   align-items: end;
   margin-bottom: 18px;
@@ -684,13 +684,13 @@ p {
 .report-group-heading {
   display: flex;
   align-items: center;
-  padding-top: 12px;
-  margin-top: 8px;
-  border-top: 1px solid rgba(40, 116, 200, 0.22);
+  padding: 18px 0 8px;
+  margin-top: 12px;
+  border-top: 2px solid rgba(40, 116, 200, 0.24);
 }
 
 .report-group-heading:first-child {
-  padding-top: 0;
+  padding-top: 4px;
   margin-top: 0;
   border-top: 0;
 }
@@ -801,8 +801,14 @@ p {
 }
 
 .summary {
-  max-width: 860px;
+  width: 100%;
+  max-width: none;
   color: #26384d;
+}
+
+.report-content .summary {
+  width: 100%;
+  max-width: 100% !important;
 }
 
 .card-actions {
