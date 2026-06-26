@@ -100,6 +100,10 @@ main {
   margin: 0 auto;
 }
 
+:target {
+  scroll-margin-top: 104px;
+}
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.8fr);
